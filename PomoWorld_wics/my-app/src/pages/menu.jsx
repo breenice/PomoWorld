@@ -1,25 +1,55 @@
 import React, { useState, useEffect } from 'react';
 
 const TimerWithMenu = () => {
-  const [seconds, setSeconds] = useState(0);
-  const [running, setRunning] = useState(true);
+  const pomodoro = 25 * 60;
+  const shortBreak = 5 * 60;
+  const longBreak = 15 * 60;
+  
+  const [seconds, setSeconds] = useState(pomodoro);
+  const [running, setRunning] = useState(false);
   const [menuOpen, setMenuOpen] = useState(true);
+  const [sessionType, setSessionType] = useState('Work'); 
+  const [workSessions, setWorkSessions] = useState(0);
 
   useEffect(() => {
     let interval;
 
-    if (running) {
+    if (running && seconds > 0) {
       interval = setInterval(() => {
-        setSeconds(prev => prev + 1);
+        setSeconds(prev => prev - 1);
       }, 1000);
-    } else {
-      clearInterval(interval);
+    } else if (seconds === 0) {
+      switchSession();
     }
 
     return () => clearInterval(interval);
   }, [running]);
 
+  const switchSession = () => {
+    if (sessionType === 'Work') {
+      if (workSessions < 3){
+        setSessionType('Short Break');
+        setSeconds(shortBreak);
+        setWorkSessions(prev => prev + 1);
+      } else {
+        setSessionType('Long Break');
+        setSeconds(longBreak);
+        setWorkSessions(0);
+      }
+    } else {
+      setSessionType('Work');
+      setSeconds(pomodoro);
+    }
+    setRunning(true);
+  };
+
   const toggleMenu = () => setMenuOpen(!menuOpen);
+
+  const resetTimer = () => {
+    setSessionType('Work');
+    setSeconds(pomodoro);
+    setRunning(false);
+  };
 
   return (
     <div style={{ display: 'flex' }}>
@@ -85,8 +115,20 @@ const TimerWithMenu = () => {
             cursor: 'pointer',
           }}
         >
-          {running ? 'Pause Timer' : 'Resume Timer'}
+          {running ? 'Pause' : 'Start'}
         </button>
+        <button
+          onClick={resetTimer}
+          style={{
+            backgroundColor: running ? '#e74c3c' : '#2ecc71',
+            color: '#fff',
+            padding: '10px 20px',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+          >
+            Reset
+          </button>
       </div>
     </div>
   );
