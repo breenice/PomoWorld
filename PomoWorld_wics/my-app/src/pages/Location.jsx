@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+import { useLocationActivity } from '../context/LocationActivityContext'; // Use context
+
 const MyLocation = () => {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
