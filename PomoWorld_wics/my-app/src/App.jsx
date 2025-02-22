@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import express from "express";
-import cors from "cors";
 import axios from "axios";
 
 function App() {
@@ -20,12 +18,16 @@ function App() {
             const response = await axios.get(
               `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${API_KEY}`
             );
-            setLocation(response.data.results[0].formatted_address);
+            setLocation(response.data.results[0]?.formatted_address || "Unknown Location");
 
             const hubtypes = "cafe";
-            const hubResponse = await axios.get(
-              `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=cafe&key=${API_KEY}`
-            );
+            const hubResponse = await axios.get(`http://localhost:5000/hubs`, {
+              params: {
+                lat: latitude,
+                lng: longitude,
+                type: "cafe",
+              },
+            });
             console.log("API Response:", hubResponse.data);
             setHubs(hubResponse.data.results || []);  
           } catch (error) {
@@ -47,7 +49,15 @@ function App() {
       <h1>Current Location</h1>
       <p>{location ? location : "Fetching location..."}</p>
       <h1>Learning Hubs</h1>
-      <p>{hubs.length}</p>
+      {error ? <p style={{ color: "red" }}>{error}</p> : null}
+     <ul>
+        {hubs.map((hub) => ( // (iterates and maps them to JSX elements)
+          <li key={hub.id}>
+            {console.log(hub)}
+            {hub.name} - {hub.vicinity}
+          </li>
+        ))}
+      </ul>
 
     </div>
   );
