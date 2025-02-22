@@ -10,7 +10,7 @@ app.use(cors());
 
 const API_KEY = "AIzaSyDdTjmXRPhynZZ6cA9EZH_bV1Ud43dE3DE"; 
 
-app.get("/places", async (req, res) => {
+app.get("/hubs", async (req, res) => {
   try {
     const { lat, lng, type } = req.query;
     const response = await axios.get(
