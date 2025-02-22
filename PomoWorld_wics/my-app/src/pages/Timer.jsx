@@ -12,6 +12,8 @@ const Timer = ({ menuOpen }) => {
   const [location, setLocation] = useState(null);  // State to store location
   const [locationError, setLocationError] = useState(null);  // To store location errors
 
+  const [activity, setActivity] = useState(null);
+
   useEffect(() => {
     let interval;
 
@@ -50,6 +52,17 @@ const Timer = ({ menuOpen }) => {
     setRunning(false);
   };
 
+  const getActivity = () => {
+    const savedActivity = localStorage.getItem('activity');
+    if (savedActivity) {
+      setActivity(savedActivity); // Set the saved activity into state
+    } else {
+      // If no activity is saved, default to 'Relaxing'
+      setActivity('Relaxing');
+      localStorage.setItem('activity', 'Relaxing'); // Optionally store the default activity in localStorage
+    }
+  };
+
   const getLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -66,6 +79,12 @@ const Timer = ({ menuOpen }) => {
     } else {
       setLocationError("Geolocation is not supported by this browser.");
     }
+  };
+
+  const startTimer = () => {
+    getActivity();
+    getLocation();
+    setRunning(true);
   };
 
   return (
