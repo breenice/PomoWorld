@@ -1,37 +1,55 @@
 // src/components/AuthPage.js
 import React, { useState } from 'react';
-import { auth } from '../firebase'; // Assuming firebase.js is properly set up
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
+import { auth, db } from '../firebase'; // Assuming firebase.js is properly set up
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and sign-up forms
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState(''); // Store username during sign up
+  const [firstName, setFirstName] = useState(''); // Store first name
+  const [lastName, setLastName] = useState(''); // Store last name
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
+  // Handle sign up and store user information in Firestore
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    try {
+      // Create user with email and password
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Add additional user data to Firestore (username, first name, last name, etc.)
+      await setDoc(doc(db, 'users', user.uid), {
+        username: username,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        createdAt: new Date(),
+      });
+
+      setError('');
+      alert('Sign up successful');
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+    }
+  };
+
+  // Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
       setError('');
       alert('Login successful');
+      navigate('/')
     } catch (err) {
       setError('Invalid email or password');
-      console.error(err);
-    }
-  };
-
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setError('');
-      alert('Sign up successful');
-    } catch (err) {
-      setError(err.message);
       console.error(err);
     }
   };
@@ -43,6 +61,34 @@ const AuthPage = () => {
         style={styles.form}
         onSubmit={isLogin ? handleLogin : handleSignUp}
       >
+        {!isLogin && (
+          <>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              style={styles.input}
+              required
+            />
+            <input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              style={styles.input}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              style={styles.input}
+              required
+            />
+          </>
+        )}
         <input
           type="email"
           placeholder="Email"
