@@ -13,6 +13,8 @@ import Menu from './pages/Menu.jsx';
 import Activity from './pages/Activity.jsx';
 import ProfilePage from './pages/Profile.jsx';
 
+import "./App.css";
+
 function App() {
   return (
     <AuthProvider>

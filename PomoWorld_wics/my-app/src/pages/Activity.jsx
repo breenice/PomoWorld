@@ -1,120 +1,111 @@
 import React, { useState, useEffect } from 'react';
+import lofiGirl from '../assets/lofi_girl.jpg'; // Import the image
 
 const Activity = () => {
   const [activityName, setActivityName] = useState('');
-  const [savedActivity, setSavedActivity] = useState(''); // Default to empty string
-  const [isEditing, setIsEditing] = useState(false); // Flag to track if the user is editing
+  const [savedActivity, setSavedActivity] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Retrieve saved activity from localStorage when the component mounts
   useEffect(() => {
-    const saved = localStorage.getItem('activity');
-    if (saved) {
-      setSavedActivity(saved); // If activity is found in localStorage, use it
-      setActivityName(saved); // Also set the state to reflect the saved activity
-    } else {
-      setSavedActivity('Relaxing'); // Default to 'Relaxing' if no saved activity
-      setActivityName('Relaxing');
-    }
+    const saved = localStorage.getItem('activity') || 'Relaxing';
+    setSavedActivity(saved);
+    setActivityName(saved);
   }, []);
 
-  // Handle input change
   const handleInputChange = (event) => {
-    setActivityName(event.target.innerText); // Update the activityName state as the user types
+    setActivityName(event.target.value);
   };
 
-  // Save the activity
   const handleSaveActivity = () => {
     if (activityName.trim() === '') {
       alert('Please enter a valid activity name.');
       return;
     }
-
-    // Save the activity to localStorage
     localStorage.setItem('activity', activityName);
-    setSavedActivity(activityName); // Update the saved activity in state
-    setMessage(`Current Activity: ${activityName}`); // Update subtitle directly
-    setIsEditing(false); // Exit editing mode
+    setSavedActivity(activityName);
+    setMessage(`Current Activity: ${activityName}`);
+    setIsEditing(false);
   };
 
-  // Handle pressing the Enter key
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSaveActivity(); // Save when Enter is pressed
-    }
+    if (event.key === 'Enter') handleSaveActivity();
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.formContainer}>
-        {/* Editable Activity Name Display */}
-        <h2
-          onClick={() => {
-            if (!isEditing) {
-              setIsEditing(true); // Enable editing on click
-            }
-          }}
-          style={{
-            ...styles.activityHeader,
-            color: isEditing ? '#888' : 'black', // Lighter grey color while editing
-            cursor: isEditing ? 'text' : 'pointer', // Change cursor when editing
-          }}
-          contentEditable={isEditing}
-          onInput={handleInputChange} // Update activity name when user types
-          onKeyDown={handleKeyDown} // Handle Enter key press
-          suppressContentEditableWarning={true} // Prevent warning about contentEditable
-        >
-          {activityName}
-        </h2>
-
-        {/* Current Activity Subtitle */}
-        <p style={styles.subtitle}>Current Activity</p>
-
-        {/* Message Confirmation */}
-        {message && (
-          <p style={styles.message}>{message}</p> // Directly update the message below the subtitle
-        )}
+    <div style={styles.background}>
+      <div style={styles.container}>
+        <h2 style={styles.title}>Activity</h2>
+        <div style={styles.inputContainer}>
+          <input
+            type="text"
+            value={activityName}
+            onChange={handleInputChange}
+            onFocus={() => setIsEditing(true)}
+            onBlur={handleSaveActivity}
+            onKeyDown={handleKeyDown}
+            style={{
+              ...styles.input,
+              borderBottom: isEditing ? '2px solid #007BFF' : '2px solid transparent',
+            }}
+          />
+        </div>
+        {/* <p style={styles.subtitle}>Current Activity</p> */}
+        {message && <p style={styles.message}>{message}</p>}
       </div>
     </div>
   );
 };
 
-// Inline styles for the Activity page
 const styles = {
+  background: {
+    backgroundImage: `url(${lofiGirl})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     width: '100%',
-    maxWidth: '500px',
-    margin: '0 auto',
+    // maxWidth: '400px',
     padding: '20px',
     textAlign: 'center',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    backgroundColor: '#f9f9f9',
+    borderRadius: '10px',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)', // Semi-transparent white for better readability
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
   },
-  formContainer: {
-    marginBottom: '20px',
-  },
-  activityHeader: {
-    fontSize: '2rem', // Larger font for the activity name
+  title: {
+    fontSize: '1.5rem',
     fontWeight: 'bold',
-    transition: 'color 0.3s ease', // Smooth transition on color change
-    borderBottom: '2px solid #000', // Thin crisp underline
-    paddingBottom: '3px', // Reduced space between line and text
-    textAlign: 'left', // Left-align the activity name
-    minHeight: '2rem', // Ensure text stays within a specific height
-    outline: 'none', // Remove outline when in edit mode
+    marginBottom: '15px',
+    color: '#333',
+  },
+  inputContainer: {
+    position: 'relative',
+  },
+  input: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    padding: '5px',
+    width: '100%',
+    textAlign: 'center',
+    outline: 'none',
+    border: 'none',
+    backgroundColor: 'transparent',
+    transition: 'border-bottom 0.3s ease',
   },
   subtitle: {
     fontSize: '1rem',
-    color: '#555',
-    marginTop: '5px',
-    textAlign: 'left', // Left-align subtitle as well
+    color: '#666',
+    marginTop: '10px',
   },
   message: {
     fontSize: '1rem',
-    color: '#155724',
+    color: '#007BFF',
     marginTop: '5px',
-    textAlign: 'left', // Align the message text to the left
   },
 };
 
