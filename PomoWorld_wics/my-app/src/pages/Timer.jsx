@@ -2,6 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase'; // Firebase config
 import { collection, query, where, addDoc, doc, getDoc, getDocs } from 'firebase/firestore'; // Firestore functions
 import Activity from './Activity';
+import background from '../assets/stardew.png';
+
+
+const styles = {
+  background: {
+    backgroundImage: `url(${background})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    width: '100%',
+    // maxWidth: '400px',
+    padding: '20px',
+    textAlign: 'center',
+    borderRadius: '10px',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)', // Semi-transparent white for better readability
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+  },
+  title: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    marginBottom: '15px',
+    color: '#333',
+  },
+  };
 
 const Timer = ({ menuOpen }) => {
   const [hours, setHours] = useState(0);
@@ -198,98 +228,84 @@ const Timer = ({ menuOpen }) => {
         flex: 1,
       }}
     >
-      <h1>{activity}</h1>
-      <div>
-        <label>Minutes: </label>
-        <input
-          type="number"
-          value={minutes}
-          onChange={(e) => setMinutes(Number(e.target.value))}
-          min={1}
-          style={{ width: '60px', marginRight: '10px' }}
-          disabled={running}
-        />
-        <label>Seconds: </label>
-        <input
-          type="number"
-          value={seconds}
-          onChange={(e) => setSeconds(Number(e.target.value))}
-          min={0}
-          max={59}
-          style={{ width: '60px' }}
-          disabled={running}
-        />
+      <div style = {styles.background}>
+        <div style = {styles.container}>
+          <h1>{activity}</h1>
+          <div style = {styles.container}>
+            <label>Minutes: </label>
+            <input
+              type="number"
+              value={minutes}
+              onChange={(e) => setMinutes(Number(e.target.value))}
+              min={1}
+              style={{ width: '60px', marginRight: '10px' }}
+              disabled={running}
+            />
+            <label>Seconds: </label>
+            <input
+              type="number"
+              value={seconds}
+              onChange={(e) => setSeconds(Number(e.target.value))}
+              min={0}
+              max={59}
+              style={{ width: '60px' }}
+              disabled={running}
+            />
+          </div>
+          <p style={{ fontSize: '3rem', marginBottom: '20px' }}>
+            {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+          </p>
+
+          <button
+            onClick={() => {
+              if (!running) {
+                startTimer();
+              }
+              setRunning(!running);
+            }}
+            style={{
+              backgroundColor: running ? '#e74c3c' : '#2ecc71',
+              color: '#fff',
+              padding: '10px 20px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            {running ? 'Pause' : 'Start'}
+          </button>
+
+          <button
+            onClick={resetTimer}
+            style={{
+              backgroundColor: '#f39c12',
+              color: '#fff',
+              padding: '10px 20px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Reset
+          </button>
+
+          {location && (
+            <div>
+              <h3>Current Location:</h3>
+              <p>Latitude: {location.latitude}</p>
+              <p>Longitude: {location.longitude}</p>
+            </div>
+          )}
+
+          {locationError && (
+            <div style={{ color: 'red' }}>
+              <h3>{locationError}</h3>
+            </div>
+          )}
+
+          {userError && <div style={{ color: 'red' }}>{userError}</div>}
+        </div>
+        </div>
       </div>
+      );
+  };
 
-      {/* <p style={{ fontSize: '2rem', marginBottom: '20px' }}>
-        Time: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-      </p> */}
-      <p style={{ fontSize: '3rem', marginBottom: '20px' }}>
-        {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-      </p>
-
-      <button
-        onClick={() => {
-          if (!running) {
-            startTimer();
-          }
-          setRunning(!running);
-        }}
-        style={{
-          backgroundColor: running ? '#e74c3c' : '#2ecc71',
-          color: '#fff',
-          padding: '10px 20px',
-          border: 'none',
-          cursor: 'pointer',
-        }}
-      >
-        {running ? 'Pause' : 'Start'}
-      </button>
-
-      <button
-        onClick={resetTimer}
-        style={{
-          backgroundColor: '#f39c12',
-          color: '#fff',
-          padding: '10px 20px',
-          border: 'none',
-          cursor: 'pointer',
-        }}
-      >
-        Reset
-      </button>
-
-      {/* <button
-        onClick={getLocation}
-        style={{
-          backgroundColor: '#3498db',
-          color: '#fff',
-          padding: '10px 20px',
-          border: 'none',
-          cursor: 'pointer',
-          marginTop: '10px',
-        }}
-      >
-        Get Current Location
-      </button> */}
-
-      {location && (
-        <div>
-          <h3>Current Location:</h3>
-          <p>Latitude: {location.latitude}</p>
-          <p>Longitude: {location.longitude}</p>
-        </div>
-      )}
-
-      {locationError && (
-        <div style={{ color: 'red' }}>
-          <h3>{locationError}</h3>
-        </div>
-      )}
-
-      {userError && <div style={{ color: 'red' }}>{userError}</div>}
-    </div>
-  );
-};
-
-export default Timer;
+  export default Timer;

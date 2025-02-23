@@ -4,6 +4,7 @@ import { auth, db } from '../firebase'; // Assuming firebase.js is properly set 
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import background from '../assets/animalbackground.png';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and sign-up forms
@@ -55,85 +56,102 @@ const AuthPage = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
-      <form
-        style={styles.form}
-        onSubmit={isLogin ? handleLogin : handleSignUp}
-      >
-        {!isLogin && (
-          <>
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              style={styles.input}
-              required
-            />
-            <input
-              type="text"
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              style={styles.input}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              style={styles.input}
-              required
-            />
-          </>
-        )}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
-          required
-        />
-        {error && <div style={styles.error}>{error}</div>}
-        <button type="submit" style={styles.button}>
-          {isLogin ? 'Login' : 'Sign Up'}
+    <div style={styles.background}>
+      <div style={styles.container}>
+        <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
+        <form
+          style={styles.form}
+          onSubmit={isLogin ? handleLogin : handleSignUp}
+        >
+          {!isLogin && (
+            <>
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                style={styles.input}
+                required
+              />
+              <input
+                type="text"
+                placeholder="First Name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                style={styles.input}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                style={styles.input}
+                required
+              />
+            </>
+          )}
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={styles.input}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={styles.input}
+            required
+          />
+          {error && <div style={styles.error}>{error}</div>}
+          <button type="submit" style={styles.button}>
+            {isLogin ? 'Login' : 'Sign Up'}
+          </button>
+        </form>
+        <button
+          onClick={() => setIsLogin(!isLogin)}
+          style={styles.toggleButton}
+        >
+          {isLogin
+            ? 'Don’t have an account? Sign Up'
+            : 'Already have an account? Login'}
         </button>
-      </form>
-      <button
-        onClick={() => setIsLogin(!isLogin)}
-        style={styles.toggleButton}
-      >
-        {isLogin
-          ? 'Don’t have an account? Sign Up'
-          : 'Already have an account? Login'}
-      </button>
+      </div>
     </div>
   );
 };
 
 // Simple inline styles
 const styles = {
-  container: {
-    width: '100%',
-    maxWidth: '400px',
-    margin: '0 auto',
-    padding: '20px',
-    textAlign: 'center',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    backgroundColor: '#f9f9f9',
-  },
+    background: {
+      backgroundImage: `url(${background})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      height: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    container: {
+      width: '100%',
+      // maxWidth: '400px',
+      padding: '20px',
+      textAlign: 'center',
+      borderRadius: '10px',
+      backgroundColor: 'rgba(255, 255, 255, 0.85)', // Semi-transparent white for better readability
+      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+    },
+    title: {
+      fontSize: '1.5rem',
+      fontWeight: 'bold',
+      marginBottom: '15px',
+      color: '#333',
+    },
   form: {
     display: 'flex',
     flexDirection: 'column',

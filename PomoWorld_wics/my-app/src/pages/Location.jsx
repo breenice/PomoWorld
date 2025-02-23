@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import background from '../assets/forest.png';
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 const styles = {
   background: {
@@ -29,37 +31,15 @@ const styles = {
     marginBottom: '15px',
     color: '#333',
   },
-  inputContainer: {
-    position: 'relative',
-  },
-  input: {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    padding: '5px',
-    width: '100%',
-    textAlign: 'center',
-    outline: 'none',
-    border: 'none',
-    backgroundColor: 'transparent',
-    transition: 'border-bottom 0.3s ease',
-  },
-  subtitle: {
-    fontSize: '1rem',
-    color: '#666',
-    marginTop: '10px',
-  },
-  message: {
-    fontSize: '1rem',
-    color: '#007BFF',
-    marginTop: '5px',
-  },
-}
+  };
 const MyLocation = () => {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
   const [hubs, setHubs] = useState([]); // hubs: useState array of places to show that can accumulate points
   const [coords, setCoords] = useState({ lat: 0, lng: 0 });
-  const API_KEY = "AIzaSyDdTjmXRPhynZZ6cA9EZH_bV1Ud43dE3DE"; // Replace with your API key
+  const [hotspots, setHotspots] = useState({}); 
+  const [selectedHub, setSelectedHub] = useState(null);
+  const API_KEY = "AIzaSyDdTjmXRPhynZZ6cA9EZH_bV1Ud43dE3DE"; 
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -99,6 +79,40 @@ const MyLocation = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchHotspots = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "activities"));
+        const pointsData = {};
+
+        querySnapshot.forEach((doc) => {
+          const { latitude, longitude, points } = doc.data();
+          const key = `${latitude},${longitude}`;
+
+          if (!pointsData[key]) {
+            pointsData[key] = { latitude, longitude, totalPoints: 0 };
+          }
+          pointsData[key].totalPoints += points;
+        });
+
+        setHotspots(pointsData);
+      } catch (error) {
+        console.error("Error fetching hotspots:", error);
+      }
+    };
+
+    fetchHotspots();
+  }, []);
+
+  const hubsWithPoints = hubs.map((hub) => {
+    const key = `${hub.geometry.location.lat},${hub.geometry.location.lng}`;
+    return {
+      ...hub,
+      totalPoints: hotspots[key]?.totalPoints || 0, // if in firebase
+    };
+  });
+  hubsWithPoints.sort((a, b) => b.totalPoints - a.totalPoints); // show high points first
+
   return (
     <div style = {styles.background}>
       <div style={styles.container}>
@@ -110,7 +124,7 @@ const MyLocation = () => {
           {hubs.slice(0, 5).map((hub) => (
             <li key={hub.id}>
               {console.log(hub)}
-              {hub.name} - {hub.vicinity}
+              {hub.name} | {hub.vicinity} - Points: {hub.totalPoints}
             </li>
           ))}
         </ul>
@@ -134,10 +148,11 @@ const MyLocation = () => {
               {/* learning hub markers */}
               {hubs.map((hub) => (
                 <Marker
-                  key={hub.id}
-                  position={{ lat: hub.geometry.location.lat, lng: hub.geometry.location.lng }}
-                  title={hub.name}
-                />
+                key={hub.id}
+                position={{ lat: hub.geometry.location.lat, lng: hub.geometry.location.lng }}
+                title={hub.name}
+                onClick={() => setSelectedHub(hub)}
+              />              
               ))}
             </GoogleMap>
             </div>
