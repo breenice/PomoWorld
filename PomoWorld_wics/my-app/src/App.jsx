@@ -10,6 +10,7 @@ import Menu from './pages/Menu.jsx';
 import Leaderboard from './pages/Leaderboard.jsx';
 import Activity from './pages/Activity.jsx';
 import ProfilePage from './pages/Profile.jsx';
+// import Scoreboard from './pages/Scoreboard.jsx';
 
 import "./App.css";
 
@@ -25,6 +26,7 @@ function App() {
               <Route path="/" element={<Timer />} />
               <Route path="/location" element={<MyLocation />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              {/* <Route path="/scoreboard" element={<Scoreboard />} /> */}
               <Route path="/activity" element={<Activity />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Routes>
