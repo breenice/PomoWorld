@@ -32,9 +32,9 @@ const Menu = () => {
           <li style={{ margin: '10px 0' }}>
             <Link to="/" style={linkStyle}>Timer</Link>
           </li>
-          {/* <li style={{ margin: '10px 0' }}>
+          <li style={{ margin: '10px 0' }}>
             <Link to="/leaderboard" style={linkStyle}>Leaderboard</Link>
-          </li> */}
+          </li>
           <li style={{ margin: '10px 0' }}>
             <Link to="/profile" style={linkStyle}>Profile</Link>
           </li>

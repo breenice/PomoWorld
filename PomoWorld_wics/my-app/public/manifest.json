@@ -1,0 +1,12 @@
+{
+  "name": "Pomo World",
+  "version": "1.0.0",
+  "description": "Grow with Pomo!",
+  "manifest_version": 3,
+  "author": "Breenice Lee and Feyona Zhang",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Player Info"
+  }
+}
+  

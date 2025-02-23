@@ -1,0 +1,54 @@
+.leaderboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    min-height: 80vh;
+    background: linear-gradient(135deg, #8bd6df, #90a1ee); /* Green gradient */
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin: auto;
+  }
+  
+  .leaderboard-header {
+    background: linear-gradient(90deg, #c191e6, #6766bb); /* Dark green gradient */
+    color: white;
+    padding: 15px;
+    width: 100%;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  
+  th {
+    background: #a281c7; 
+    color: white;
+  }
+  
+  tr {
+    background-color: #f2f2f2;
+    color: black;
+  }
+  
+  tr:hover {
+    background-color: #ddd;
+    transition: 0.3s;
+    color: black;
+  }
+  
