@@ -3,14 +3,15 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx'; // Import AuthProvider
 
-import AuthPage from './pages/login.jsx'; // Login/Signup page
-import Timer from './pages/Timer.jsx'; // Example home page for logged-in users
+import AuthPage from './pages/login.jsx';
+import Timer from './pages/Timer.jsx'; 
 import MyLocation from './pages/Location.jsx';
 import Menu from './pages/Menu.jsx';
 import Leaderboard from './pages/Leaderboard.jsx';
 import Activity from './pages/Activity.jsx';
 import ProfilePage from './pages/Profile.jsx';
-// import Scoreboard from './pages/Scoreboard.jsx';
+
+import Hotspots from './pages/Hotspots.jsx';
 
 import "./App.css";
 
@@ -26,7 +27,7 @@ function App() {
               <Route path="/" element={<Timer />} />
               <Route path="/location" element={<MyLocation />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
-              {/* <Route path="/scoreboard" element={<Scoreboard />} /> */}
+              <Route path="/hotspots" element={<Hotspots />} />
               <Route path="/activity" element={<Activity />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Routes>

@@ -35,6 +35,9 @@ const Menu = () => {
             <Link to="/leaderboard" style={linkStyle}>Leaderboard</Link>
           </li>
           <li>
+            <Link to="/hotspots" style={linkStyle}>Hotspots</Link>
+          </li>
+          <li>
             <Link to="/profile" style={linkStyle}>Profile</Link>
           </li>
         </ul>
