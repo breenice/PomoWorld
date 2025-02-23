@@ -5,6 +5,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
+import carriageStreet from '../assets/city-carriage-street.jpg';
+
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and sign-up forms
   const [email, setEmail] = useState('');
@@ -55,6 +57,7 @@ const AuthPage = () => {
   };
 
   return (
+    <div style={styles.background}>
     <div style={styles.container}>
       <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
       <form
@@ -119,11 +122,22 @@ const AuthPage = () => {
           : 'Already have an account? Login'}
       </button>
     </div>
+    </div>
   );
 };
 
 // Simple inline styles
 const styles = {
+    background: {
+          backgroundImage: `url(${carriageStreet})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          minHeight: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
   container: {
     width: '100%',
     maxWidth: '400px',
@@ -132,7 +146,7 @@ const styles = {
     textAlign: 'center',
     border: '1px solid #ccc',
     borderRadius: '8px',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f9f9f980',
   },
   form: {
     display: 'flex',

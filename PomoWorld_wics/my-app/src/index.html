@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PomoWorld</title>
+    <style>
+        /* Ensure full-page layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* Prevents scrolling */
+        }
+
+        /* Background Image */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('venice-al-fresco.jpg') no-repeat center center/cover;
+            z-index: -1;
+        }
+
+        /* Text Container */
+        .title-container {
+            position: relative;
+            padding: 2rem 4rem;
+        }
+
+        /* Website Name */
+        .title {
+            font-size: 5rem;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Gradient Overlay */
+        .gradient-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0) 100%);
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background"></div>
+
+    <div class="title-container">
+        <h1 class="title">PomoWorld</h1>
+        <div class="gradient-overlay"></div>
+    </div>
+
+</body>
+</html>
