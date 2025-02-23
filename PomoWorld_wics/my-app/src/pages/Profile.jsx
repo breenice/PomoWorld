@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase'; // Assuming firebase.js is set up
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth'; // Import signOut
 import { setPersistence, browserLocalPersistence } from "firebase/auth";
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
+  const [userPoints, setUserPoints] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const ProfilePage = () => {
 
         if (docSnap.exists()) {
           setUserData(docSnap.data());
+          await getUserPoints(user.uid);
         } else {
           setError("No user data found.");
         }
@@ -41,6 +43,24 @@ const ProfilePage = () => {
     // Clean up the observer when the component is unmounted
     return () => unsubscribe();
   }, [navigate]);
+
+  const getUserPoints = async (uid) => {
+    try {
+        const activitiesRef = collection(db, 'activities');
+        const q = query(activitiesRef, where('user', '==', uid));
+
+        const querySnapshot = await getDocs(q);
+        let totalPoints = 0;
+
+        querySnapshot.forEach((doc) => {
+            totalPoints += doc.data().points;
+        });
+
+        setUserPoints(totalPoints);
+    } catch (error) {
+        console.error('error fethcing user points:', error);
+    }
+  }
 
   // Sign out function
   const handleSignOut = async () => {
@@ -76,6 +96,9 @@ const ProfilePage = () => {
         </div>
         <div style={styles.infoItem}>
           <strong>Email:</strong> {userData.email}
+        </div>
+        <div style={styles.infoItem}>
+          <strong>Total Points:</strong> {userPoints}
         </div>
       </div>
       <button onClick={handleSignOut} style={styles.signOutButton}>Sign Out</button>
