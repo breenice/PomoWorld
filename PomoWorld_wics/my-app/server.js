@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 app.use(cors());
 
-const API_KEY = "AIzaSyDdTjmXRPhynZZ6cA9EZH_bV1Ud43dE3DE"; 
+const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY; 
 
 app.get("/hubs", async (req, res) => {
   try {

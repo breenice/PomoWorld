@@ -39,7 +39,8 @@ const MyLocation = () => {
   const [coords, setCoords] = useState({ lat: 0, lng: 0 });
   const [hotspots, setHotspots] = useState({}); 
   const [selectedHub, setSelectedHub] = useState(null);
-  const API_KEY = "AIzaSyDdTjmXRPhynZZ6cA9EZH_bV1Ud43dE3DE"; 
+  const API_KEY = "AIzaSyDdTjmXRPhynZZ6cA9EZH_bV1Ud43dE3DE";
+  //const API_KEY = import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY; //stuck in developer mode
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -124,7 +125,7 @@ const MyLocation = () => {
           {hubs.slice(0, 5).map((hub) => (
             <li key={hub.id}>
               {console.log(hub)}
-              {hub.name} | {hub.vicinity} - Points: {hub.totalPoints}
+              {hub.name} | {hub.vicinity} - Points: {hub.totalPoints ?? 0}
             </li>
           ))}
         </ul>

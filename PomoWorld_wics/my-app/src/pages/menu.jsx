@@ -11,7 +11,7 @@ const linkStyle = {
   padding: '10px 0',
 };
 
-const Menu = () => {
+const Menu = ({ setHasClicked }) => {
   const [isOpen, setOpen] = useState(false);
   return (
     <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1000 }}>
@@ -55,11 +55,11 @@ const Menu = () => {
         >
           <nav style={{ display: 'flex', flexDirection: 'column' }}>
             <ul style={{ listStyle: 'none', padding: '0', margin: '0' }}>
-              <li><Link to="/location" style={linkStyle}>Location</Link></li>
-              <li><Link to="/activity" style={linkStyle}>Activity</Link></li>
-              <li><Link to="/" style={linkStyle}>Timer</Link></li>
-              <li><Link to="/leaderboard" style={linkStyle}>Leaderboard</Link></li>
-              <li><Link to="/profile" style={linkStyle}>Profile</Link></li>
+              <li><Link to="/location" style={linkStyle}onClick={() => setHasClicked(true)}>Location</Link></li>
+              <li><Link to="/activity" style={linkStyle}onClick={() => setHasClicked(true)}>Activity</Link></li>
+              <li><Link to="/" style={linkStyle}onClick={() => setHasClicked(true)}>Timer</Link></li>
+              <li><Link to="/leaderboard" style={linkStyle}onClick={() => setHasClicked(true)}>Leaderboard</Link></li>
+              <li><Link to="/profile" style={linkStyle}onClick={() => setHasClicked(true)}>Profile</Link></li>
             </ul>
           </nav>
         </div>
