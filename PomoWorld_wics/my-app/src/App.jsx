@@ -21,7 +21,7 @@ function App() {
       <Router>
         <div>
           <Menu />
-          <div>
+          <div style={{ marginRight: '400px', width: '100%' }}>
             <Routes>
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/" element={<Timer />} />

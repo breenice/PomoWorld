@@ -5,8 +5,9 @@
   "manifest_version": 3,
   "author": "Breenice Lee and Feyona Zhang",
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "index.html",
     "default_title": "Player Info"
-  }
+  },
+  "permissions": ["geolocation"]
 }
   

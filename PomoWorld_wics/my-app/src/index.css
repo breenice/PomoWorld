@@ -1,7 +1,7 @@
 html
 {
-    width: 800px;  /* max: 800px */
-    height: 600px; /* max: 600px */
+    width: 700px;  /* max: 800px */
+    height: 300px; /* max: 600px */
 }
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
