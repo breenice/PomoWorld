@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth'; // Import signOut
 import { setPersistence, browserLocalPersistence } from "firebase/auth";
 
+import duskCity from '../assets/studio_ghibli_city_night.jpg'
+
 const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
   const [userPoints, setUserPoints] = useState(0);
@@ -82,6 +84,7 @@ const ProfilePage = () => {
   }
 
   return (
+    <div style={styles.background}>
     <div style={styles.container}>
       <h1>Profile</h1>
       <div style={styles.infoContainer}>
@@ -103,20 +106,31 @@ const ProfilePage = () => {
       </div>
       <button onClick={handleSignOut} style={styles.signOutButton}>Sign Out</button>
     </div>
+    </div>
   );
 };
 
 // Simple inline styles for the profile page
 const styles = {
+  background: {
+      backgroundImage: `url(${duskCity})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      height: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   container: {
     width: '100%',
     maxWidth: '500px',
     margin: '0 auto',
     padding: '20px',
     textAlign: 'center',
-    border: '1px solid #ccc',
+    border: '0px solid #ccc',
     borderRadius: '8px',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f9f9f980',
   },
   infoContainer: {
     textAlign: 'left',

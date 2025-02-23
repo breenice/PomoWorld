@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase'; // Firebase config
 import { collection, query, where, addDoc, doc, getDoc, getDocs } from 'firebase/firestore'; // Firestore functions
+import Activity from './Activity';
 
 const Timer = ({ menuOpen }) => {
   const [hours, setHours] = useState(0);
@@ -197,7 +198,7 @@ const Timer = ({ menuOpen }) => {
         flex: 1,
       }}
     >
-      <h1>Timer</h1>
+      <h1>{activity}</h1>
       <div>
         <label>Minutes: </label>
         <input
@@ -220,8 +221,11 @@ const Timer = ({ menuOpen }) => {
         />
       </div>
 
-      <p style={{ fontSize: '2rem', marginBottom: '20px' }}>
+      {/* <p style={{ fontSize: '2rem', marginBottom: '20px' }}>
         Time: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+      </p> */}
+      <p style={{ fontSize: '3rem', marginBottom: '20px' }}>
+        {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
       </p>
 
       <button
@@ -255,7 +259,7 @@ const Timer = ({ menuOpen }) => {
         Reset
       </button>
 
-      <button
+      {/* <button
         onClick={getLocation}
         style={{
           backgroundColor: '#3498db',
@@ -267,7 +271,7 @@ const Timer = ({ menuOpen }) => {
         }}
       >
         Get Current Location
-      </button>
+      </button> */}
 
       {location && (
         <div>

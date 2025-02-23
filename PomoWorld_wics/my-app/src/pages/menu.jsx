@@ -16,20 +16,19 @@ const Menu = () => {
         right: '0',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        justifyContent: 'space-evenly', // Ensure links are spaced evenly
         boxShadow: '-4px 0 10px rgba(0, 0, 0, 0.5)',
       }}
     >
-      <h2>Menu</h2>
       <nav>
         <ul style={{ listStyle: 'none', padding: '0' }}>
-          <li style={{ margin: '10px 0' }}>
+          <li>
             <Link to="/location" style={linkStyle}>Location</Link>
           </li>
-          <li style={{ margin: '10px 0' }}>
+          <li>
             <Link to="/activity" style={linkStyle}>Activity</Link>
           </li>
-          <li style={{ margin: '10px 0' }}>
+          <li>
             <Link to="/" style={linkStyle}>Timer</Link>
           </li>
           <li style={{ margin: '10px 0' }}>
