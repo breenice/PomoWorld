@@ -1,65 +1,135 @@
 import React, { useState, useEffect } from 'react';
+import { db, auth } from '../firebase'; // Firebase config
+import { collection, query, where, addDoc, doc, getDoc, getDocs } from 'firebase/firestore'; // Firestore functions
 
 const Timer = ({ menuOpen }) => {
-  const pomodoro = 25 * 60;
-  const shortBreak = 5 * 60;
-  const longBreak = 15 * 60;
-
-  const [seconds, setSeconds] = useState(pomodoro);
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(25);
+  const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(false);
   const [sessionType, setSessionType] = useState('Work');
   const [workSessions, setWorkSessions] = useState(0);
-  const [location, setLocation] = useState(null);  // State to store location
-  const [locationError, setLocationError] = useState(null);  // To store location errors
-
+  const [location, setLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
   const [activity, setActivity] = useState(null);
+  const [totalTime, setTotalTime] = useState(0);
+  const [user, setUser] = useState(null);  // State to store user information
+  const [userData, setUserData] = useState(null);  // Store fetched user data from Firestore
+  const [userError, setUserError] = useState('');
+  const [loadingUser, setLoadingUser] = useState(true); // Add loading state
+
+
+  const fetchUserData = async (email) => {
+    try {
+      // Query the "users" collection where the email matches the authenticated user's email
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('email', '==', email)); // Query by email
+  
+      // Get the query snapshot
+      const querySnapshot = await getDocs(q);
+  
+      if (!querySnapshot.empty) {
+        // Assuming email is unique, use the first document
+        const userDoc = querySnapshot.docs[0].data();
+  
+        // Set the user data state with the fetched data
+        setUserData({
+          firstName: userDoc.firstName,
+          lastName: userDoc.lastName,
+          email: userDoc.email,
+          username: userDoc.username,
+          createdAt: userDoc.createdAt?.toDate(),  // Convert Firestore Timestamp to Date object
+        });
+        setLoadingUser(false);
+      } else {
+        console.log('No user data found for this email');
+        setLoadingUser(false);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setUserError('Failed to fetch user data');
+      setLoadingUser(false);
+    }
+  };
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        setLoadingUser(true);
+        fetchUserData(currentUser.email);
+      } else {
+        setUser(null);
+        setLoadingUser(false);
+        setUserError('No user is logged in');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const calculateTotalSeconds = () => {
+    return hours * 3600 + minutes * 60 + seconds;
+  };
 
   useEffect(() => {
     let interval;
-
-    if (running && seconds > 0) {
+    if (running && calculateTotalSeconds() > 0) {
       interval = setInterval(() => {
-        setSeconds((prev) => prev - 1);
-      }, 1000);
-    } else if (seconds === 0) {
-      switchSession();
-    }
+        setSeconds((prev) => {
+          if (prev === 0 && minutes > 0) {
+            setMinutes((prevMinutes) => prevMinutes - 1);
+            return 59;
+          }
+          return prev - 1;
+        });
 
+        setTotalTime((prevTotal) => prevTotal + 1); // Track total time
+      }, 1000);
+    } else if (calculateTotalSeconds() === 0 && running) {
+      setRunning(false);
+      switchSession();
+      getActivity();
+      getLocation();
+      awardPoints();
+    }
     return () => clearInterval(interval);
-  }, [running, seconds]);
+  }, [running, minutes, seconds, user]);
 
   const switchSession = () => {
     if (sessionType === 'Work') {
       if (workSessions < 3) {
         setSessionType('Short Break');
-        setSeconds(shortBreak);
+        setMinutes(5);
+        setSeconds(0);
         setWorkSessions((prev) => prev + 1);
       } else {
         setSessionType('Long Break');
-        setSeconds(longBreak);
+        setMinutes(15);
+        setSeconds(0);
         setWorkSessions(0);
       }
     } else {
       setSessionType('Work');
-      setSeconds(pomodoro);
+      setMinutes(25);
+      setSeconds(0);
     }
-    setRunning(true);
   };
 
   const resetTimer = () => {
     setSessionType('Work');
-    setSeconds(pomodoro);
+    setMinutes(25);
+    setSeconds(0);
     setRunning(false);
+    setTotalTime(0);  // Reset total time
   };
 
   const getActivity = () => {
     const savedActivity = localStorage.getItem('activity');
     if (savedActivity) {
-      setActivity(savedActivity); // Set the saved activity into state
+      setActivity(savedActivity);
     } else {
-      // If no activity is saved, default to 'Relaxing'
       setActivity('Relaxing');
-      localStorage.setItem('activity', 'Relaxing'); // Optionally store the default activity in localStorage
+      localStorage.setItem('activity', 'Relaxing');
     }
   };
 
@@ -72,12 +142,34 @@ const Timer = ({ menuOpen }) => {
           console.log("Location fetched: ", { latitude, longitude });
         },
         (error) => {
-          setLocationError("Error fetching location");
-          console.error(error);
+          setLocationError('Error fetching location');
         }
       );
     } else {
-      setLocationError("Geolocation is not supported by this browser.");
+      setLocationError('Geolocation is not supported by this browser.');
+    }
+  };
+
+  const awardPoints = () => {
+    if (user && activity && location) {
+      const points = totalTime;
+      const activitiesRef = collection(db, 'activities');
+
+      addDoc(activitiesRef, {
+        activityName: activity,
+        location,
+        user: user.uid,  // Use user UID
+        date: new Date(),
+        points,
+      })
+        .then(() => {
+          console.log('Activity with points saved to Firebase');
+        })
+        .catch((error) => {
+          console.error('Error saving activity with points to Firebase:', error);
+        });
+    } else {
+      console.error('Activity, Location, or User not found.');
     }
   };
 
@@ -86,6 +178,16 @@ const Timer = ({ menuOpen }) => {
     getLocation();
     setRunning(true);
   };
+
+  // Conditionally render the UI based on whether the user is available
+  if (!user) {
+    return (
+      <div style={{ padding: '20px' }}>
+        <h1>Loading...</h1>
+        {userError && <p>{userError}</p>}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -96,12 +198,39 @@ const Timer = ({ menuOpen }) => {
       }}
     >
       <h1>Timer</h1>
+      <div>
+        <label>Minutes: </label>
+        <input
+          type="number"
+          value={minutes}
+          onChange={(e) => setMinutes(Number(e.target.value))}
+          min={1}
+          style={{ width: '60px', marginRight: '10px' }}
+          disabled={running}
+        />
+        <label>Seconds: </label>
+        <input
+          type="number"
+          value={seconds}
+          onChange={(e) => setSeconds(Number(e.target.value))}
+          min={0}
+          max={59}
+          style={{ width: '60px' }}
+          disabled={running}
+        />
+      </div>
+
       <p style={{ fontSize: '2rem', marginBottom: '20px' }}>
-        Time: {Math.floor(seconds / 60)}:{seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
+        Time: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
       </p>
 
       <button
-        onClick={() => setRunning(!running)}
+        onClick={() => {
+          if (!running) {
+            startTimer();
+          }
+          setRunning(!running);
+        }}
         style={{
           backgroundColor: running ? '#e74c3c' : '#2ecc71',
           color: '#fff',
@@ -112,7 +241,7 @@ const Timer = ({ menuOpen }) => {
       >
         {running ? 'Pause' : 'Start'}
       </button>
-      
+
       <button
         onClick={resetTimer}
         style={{
@@ -126,7 +255,6 @@ const Timer = ({ menuOpen }) => {
         Reset
       </button>
 
-      {/* Add a button to trigger location fetching */}
       <button
         onClick={getLocation}
         style={{
@@ -141,7 +269,6 @@ const Timer = ({ menuOpen }) => {
         Get Current Location
       </button>
 
-      {/* Display the location or error */}
       {location && (
         <div>
           <h3>Current Location:</h3>
@@ -155,6 +282,8 @@ const Timer = ({ menuOpen }) => {
           <h3>{locationError}</h3>
         </div>
       )}
+
+      {userError && <div style={{ color: 'red' }}>{userError}</div>}
     </div>
   );
 };
